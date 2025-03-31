@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 interface Todo {
   id: number;
   text: string;
+  completed: boolean;
 }
 
 export default function Home() {
@@ -37,6 +38,7 @@ export default function Home() {
     const newTodo: Todo = {
       id: Date.now(), // ユニークなIDを生成
       text: input,
+      completed: false, // 初期状態は未完了
     };
 
     setTodos([...todos, newTodo]); // 新しいTo-Doをリストに追加
@@ -48,46 +50,51 @@ export default function Home() {
     setTodos(todos.filter(todo => todo.id !== id)); // IDが一致するTo-Doを削除
   };
 
-  return (
-    <div style={{ padding: "20px" }}>
-      <h1>To-Doリスト</h1>
+  const toggleComplete = (id: number) => {
+    setTodos(todos.map(todo =>
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo
+    ));
+  };
 
-      {/* To-Do入力フォーム */}
-      <form onSubmit={addTodo} style={{ marginBottom: "20px" }}>
+  return (
+    <div className="max-w-xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-6 text-center">To-Doリスト</h1>
+
+      <form onSubmit={addTodo} className="flex mb-6">
         <input
           type="text"
           placeholder="新しいTo-Doを追加"
-          style={{ padding: "10px", width: "300px", marginRight: "10px" }}
+          className="p-2 w-full border rounded-l-md"
         />
         <button
           type="submit"
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "#4CAF50",
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-          }}
+          className="bg-green-500 text-white p-2 rounded-r-md cursor-pointer"
         >
           追加
         </button>
       </form>
 
-      {/* To-Doリストの表示 */}
-      <ul>
+      <ul className="space-y-4">
         {todos.map((todo) => (
-          <li key={todo.id} style={{ marginBottom: "10px" }}>
-            <span>{todo.text}</span>
+          <li key={todo.id} className="flex items-center justify-between">
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                checked={todo.completed}
+                onChange={() => toggleComplete(todo.id)}
+                className="mr-3"
+              />
+              <span
+                className={`${
+                  todo.completed ? "line-through text-gray-500" : ""
+                }`}
+              >
+                {todo.text}
+              </span>
+            </div>
             <button
               onClick={() => deleteTodo(todo.id)}
-              style={{
-                marginLeft: "10px",
-                padding: "5px 10px",
-                backgroundColor: "#f44336",
-                color: "white",
-                border: "none",
-                cursor: "pointer",
-              }}
+              className="bg-red-500 text-white px-4 py-2 rounded-md"
             >
               削除
             </button>
