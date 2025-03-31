@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface Todo {
   id: number;
@@ -9,6 +9,23 @@ interface Todo {
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]); // To-Doリストの状態
+
+  // ローカルストレージからTo-Doリストを取得
+  useEffect(() => {
+    const storedTodos = localStorage.getItem("todos");
+    if (storedTodos) {
+      setTodos(JSON.parse(storedTodos));
+    }
+  }, []);
+
+  // To-Doリストをローカルストレージに保存
+  useEffect(() => {
+    if (todos.length > 0) {
+      localStorage.setItem("todos", JSON.stringify(todos));
+      return;
+    }
+    localStorage.removeItem("todos");
+  }, [todos]);
 
   // To-Doの追加
   const addTodo = (e: React.FormEvent) => {
